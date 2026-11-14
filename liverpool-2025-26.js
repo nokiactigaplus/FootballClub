@@ -1,0 +1,56 @@
+// Liverpool FC men's first-team squad for the 2025/26 season.
+// Squad list reference: https://www.liverpoolfc.com/news/liverpools-squad-numbers-confirmed-2025-26
+// Ratings, potential and market values are gameplay estimates, not official ratings.
+const squad = [
+  [1, 'Alisson Becker', 'GK', 'Brazil', 32, 89, 25000000],
+  [25, 'Giorgi Mamardashvili', 'GK', 'Georgia', 24, 84, 30000000],
+  [28, 'Freddie Woodman', 'GK', 'England', 28, 72, 1000000],
+  [41, 'Ármin Pécsi', 'GK', 'Hungary', 20, 66, 500000],
+  [95, 'Harvey Davies', 'GK', 'England', 22, 65, 250000],
+  [2, 'Joe Gomez', 'CB', 'England', 28, 80, 18000000],
+  [4, 'Virgil van Dijk', 'CB', 'Netherlands', 34, 89, 25000000],
+  [5, 'Ibrahima Konaté', 'CB', 'France', 26, 86, 50000000],
+  [6, 'Milos Kerkez', 'LB', 'Hungary', 21, 82, 40000000],
+  [12, 'Conor Bradley', 'RB', 'Northern Ireland', 22, 80, 25000000],
+  [15, 'Giovanni Leoni', 'CB', 'Italy', 18, 74, 18000000],
+  [26, 'Andy Robertson', 'LB', 'Scotland', 31, 83, 15000000],
+  [30, 'Jeremie Frimpong', 'RB', 'Netherlands', 24, 85, 35000000],
+  [46, 'Rhys Williams', 'CB', 'England', 24, 67, 500000],
+  [47, 'Calvin Ramsay', 'RB', 'Scotland', 21, 68, 1000000],
+  [3, 'Wataru Endo', 'CDM', 'Japan', 32, 79, 10000000],
+  [7, 'Florian Wirtz', 'CAM', 'Germany', 22, 89, 140000000],
+  [8, 'Dominik Szoboszlai', 'CM', 'Hungary', 24, 85, 70000000],
+  [10, 'Alexis Mac Allister', 'CM', 'Argentina', 26, 87, 90000000],
+  [17, 'Curtis Jones', 'CM', 'England', 24, 81, 30000000],
+  [38, 'Ryan Gravenberch', 'CM', 'Netherlands', 23, 85, 75000000],
+  [42, 'Trey Nyoni', 'CM', 'England', 18, 68, 3000000],
+  [53, 'James McConnell', 'CDM', 'England', 20, 67, 1000000],
+  [9, 'Alexander Isak', 'ST', 'Sweden', 26, 88, 120000000],
+  [11, 'Mohamed Salah', 'RW', 'Egypt', 33, 90, 50000000],
+  [14, 'Federico Chiesa', 'RW', 'Italy', 27, 80, 18000000],
+  [18, 'Cody Gakpo', 'LW', 'Netherlands', 26, 85, 70000000],
+  [22, 'Hugo Ekitike', 'ST', 'France', 23, 83, 75000000],
+  [73, 'Rio Ngumoha', 'LW', 'England', 17, 67, 3000000],
+  [76, 'Jayden Danns', 'ST', 'England', 19, 67, 2000000],
+];
+
+const slug = (value) => String(value).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+export const liverpool2025Players = squad.map(([shirtNumber, name, position, country, age, ovr, marketValueEUR]) => ({
+  id: `liverpool-2025-26-${slug(name)}`,
+  name,
+  shirtNumber,
+  position,
+  club: 'Liverpool',
+  country,
+  age,
+  ovr,
+  potential: Math.min(95, ovr + (age <= 23 ? 4 : 1)),
+  marketValueEUR,
+  weeklyWageEUR: 0,
+  wonderkid: age <= 21 && ovr >= 67,
+  season: '2025/26',
+  rosterOnly: true,
+  ratingSource: 'Gameplay estimate; not an official rating',
+  dataSource: 'Liverpool FC 2025/26 squad list; player attributes are game estimates',
+}));

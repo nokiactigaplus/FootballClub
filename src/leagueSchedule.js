@@ -33,28 +33,35 @@ export function buildDoubleRoundRobin(leagueClubs) {
   }))];
 }
 
-export function getClubLeagueSchedule(save = readGameSave()) {
-  if (!save?.clubChosen || !save.club) return { club: null, fixtures: [], currentIndex: 0 };
+function getLeagueContext(save) {
+  if (!save?.clubChosen || !save.club) return { club: null, leagueClubs: [], allFixtures: [] };
   const allClubs = [...new Map([...clubs, ...fifaClubWorldCupClubs].map((club) => [club.id || slug(club.name), club])).values()];
   const club = allClubs.find((item) => item.name === save.club);
-  if (!club?.league) return { club, fixtures: [], currentIndex: 0 };
+  if (!club?.league) return { club, leagueClubs: [], allFixtures: [] };
   const leagueClubs = allClubs.filter((item) => item.league === club.league && item.country === club.country);
   if (!leagueClubs.some((item) => item.name === club.name)) leagueClubs.push(club);
-  const fixtures = buildDoubleRoundRobin(leagueClubs).filter((item) => item.home.name === club.name || item.away.name === club.name);
-  return { club, fixtures, currentIndex: Math.max(0, Number(save.week || 1) - 1) };
+  return { club, leagueClubs, allFixtures: buildDoubleRoundRobin(leagueClubs) };
+}
+
+export function getClubLeagueSchedule(save = readGameSave()) {
+  const { club, allFixtures } = getLeagueContext(save);
+  const fixtures = allFixtures.filter((item) => item.home.name === club?.name || item.away.name === club?.name);
+  return { club, fixtures, currentIndex: Math.max(0, Number(save?.week || 1) - 1) };
+}
+
+export function getLeagueRoundFixtures(save = readGameSave(), round = 1) {
+  const { allFixtures } = getLeagueContext(save);
+  return allFixtures.filter((fixture) => fixture.round === Number(round));
 }
 
 function shiftDate(date, days) {
-  const shifted = new Date(date.getFullYear(), date.getMonth(), date.getDate() + days, 12);
-  return shifted;
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + days, 12);
 }
 
 export function getLeagueCalendarEvents(save = readGameSave(), today = new Date()) {
   const { club, fixtures, currentIndex } = getClubLeagueSchedule(save);
   if (!club || !fixtures.length) return [];
   return fixtures.map((fixture, index) => {
-    // The game does not have an official season calendar, so schedule each round weekly
-    // relative to today and the current game week; this keeps the next match in the future.
     const date = shiftDate(today, (index - currentIndex) * 7);
     const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     const isHome = fixture.home.name === club.name;

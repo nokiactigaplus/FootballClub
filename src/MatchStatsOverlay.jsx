@@ -30,6 +30,10 @@ function makeRoster(clubName, save, allClubs) {
 }
 
 function goalNarrative(scorer, assister) {
+  if (Math.random() < 0.18) {
+    return 'Serangan balik cepat dimulai setelah sepak pojok. Thom Cleverley mengirim umpan ke Rooney, Rooney memberi umpan terobosan yang lolos melewati Puyol dan Xavi, lalu Van Persie menyambut umpan itu dengan tendangan melengkung ke sudut atas gawang Valdés.';
+  }
+
   const assisterName = assister?.name;
   const scenarios = [
     () => `${scorer.name} mengambil tendangan bebas dan mengirim bola melengkung melewati pagar hidup ke sudut gawang.`,
@@ -181,7 +185,7 @@ export default function MatchStatsOverlay() {
   return <div className="fixed inset-0 z-[60] grid place-items-center bg-black/75 p-3 backdrop-blur-sm sm:p-5" role="dialog" aria-modal="true" aria-label="Statistik hasil pertandingan">
     <section className="w-full max-w-xl overflow-hidden rounded-[24px] border border-white/10 bg-[#0d131c] text-white shadow-2xl shadow-black/60">
       <header className="border-b border-white/10 bg-gradient-to-br from-lime-300/[.12] via-[#111a23] to-cyan-300/[.07] px-4 pb-4 pt-5 sm:px-6">
-        <button type="button" aria-label="Tutup statistik" onClick={() => setReport(null)} className="float-right rounded-full border border-white/10 bg-white/[.04] px-3 py-1 text-xs text-white/70 hover:bg-white/10">Tutup</button>
+        <button type="button" aria-label="Tutup statistik" onClick={() => setReport(null)} className="float-right rounded-full border border-white/10 bg-white/[.04] px-3 py-1 text-xs text-white/70">Tutup</button>
         <p className="text-[9px] font-bold uppercase tracking-[.24em] text-lime-200">Laporan pertandingan · 90 menit</p>
         <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
           <p className="truncate text-right text-xs font-bold sm:text-sm">{report.homeName}</p>
@@ -194,19 +198,19 @@ export default function MatchStatsOverlay() {
         </div>
       </header>
       <div className="flex gap-1 border-b border-white/10 px-3 pt-2" role="tablist" aria-label="Detail pertandingan">
-        {tabs.map((tab) => <button key={tab} type="button" role="tab" aria-selected={activeTab === tab} onClick={() => setActiveTab(tab)} className={`flex-1 rounded-t-xl px-2 py-2.5 text-[10px] font-bold ${activeTab === tab ? 'bg-lime-300/10 text-lime-100' : 'text-white/45 hover:text-white/80'}`}>{tab}</button>)}
+        {tabs.map((tab) => <button key={tab} type="button" role="tab" aria-selected={activeTab === tab} onClick={() => setActiveTab(tab)} className={`flex-1 rounded-t-xl px-2 py-2.5 text-[10px] font-bold uppercase tracking-[.18em] ${activeTab === tab ? 'bg-white/[.06] text-white' : 'text-white/45 hover:text-white/75'}`}>{tab}</button>)}
       </div>
       <div className="max-h-[min(48vh,390px)] overflow-y-auto p-3 sm:p-4">
         {activeTab === 'Ringkasan' && <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-2">{report.stats.slice(0, 4).map((stat) => <div key={stat.label} className="rounded-xl border border-white/[.07] bg-white/[.025] p-3"><p className="text-[9px] text-white/40">{stat.label}</p><p className="mt-1 text-sm font-bold">{stat.home}{stat.suffix || ''} <span className="text-white/30">—</span> {stat.away}{stat.suffix || ''}</p></div>)}</div>
-          <div className="rounded-xl border border-white/[.07] bg-white/[.025] p-3"><h3 className="text-[10px] font-bold uppercase tracking-wider text-white/55">Sorotan</h3><div className="mt-2 space-y-2">{report.events.filter((event) => ['goal', 'ownGoal', 'red'].includes(event.type)).slice(0, 5).map((event, index) => <div key={`${event.minute}-${index}`} className="flex items-start gap-2 text-[10px]"><span className="w-8 shrink-0 font-bold text-lime-200">{minuteLabel(event.minute)}</span><span className="text-white/65">{eventDescription(event)} <span className="text-white/35">({event.team})</span></span></div>)}{!report.events.some((event) => ['goal', 'ownGoal', 'red'].includes(event.type)) && <p className="text-[10px] text-white/40">Tidak ada gol atau kartu merah.</p>}</div></div>
+          <div className="grid grid-cols-2 gap-2">{report.stats.slice(0, 4).map((stat) => <div key={stat.label} className="rounded-xl border border-white/[.07] bg-white/[.025] p-3"><p className="text-[9px] uppercase tracking-[.16em] text-white/45">{stat.label}</p><div className="mt-2 flex items-end justify-between gap-2"><span className="text-lg font-black text-white">{stat.home}</span><span className="text-[9px] text-white/35">{stat.suffix || ''}</span><span className="text-lg font-black text-white/70">{stat.away}</span></div></div>)}</div>
+          <div className="rounded-xl border border-white/[.07] bg-white/[.025] p-3"><h3 className="text-[10px] font-bold uppercase tracking-wider text-white/55">Sorotan</h3><div className="mt-2 space-y-2">{report.events.filter((event) => event.type === 'goal' || event.type === 'ownGoal' || event.type === 'red').slice(0, 5).map((event, index) => <div key={`${event.minute}-${index}`} className="flex items-start gap-2 text-[10px]"><span className="w-8 shrink-0 font-bold text-lime-200">{minuteLabel(event.minute)}</span><span className="text-white/65">{eventDescription(event)} <span className="text-white/35">({event.team})</span></span></div>)}{!report.events.some((event) => event.type === 'goal' || event.type === 'ownGoal' || event.type === 'red') && <p className="text-[10px] text-white/40">Pertandingan berjalan tanpa gol atau kartu merah.</p>}</div></div>
         </div>}
         {activeTab === 'Statistik' && <div className="space-y-1.5">{report.stats.map((stat) => {
           const total = Math.max(1, stat.home + stat.away);
           const homeWidth = stat.suffix === '%' ? stat.home : (stat.home / total) * 100;
-          return <div key={stat.label} className="rounded-xl border border-white/[.05] bg-white/[.02] px-3 py-2.5"><div className="grid grid-cols-[36px_1fr_36px] items-center gap-2 text-[10px] font-bold"><span>{stat.home}{stat.suffix || ''}</span><span className="text-center text-white/55">{stat.label}</span><span className="text-right">{stat.away}{stat.suffix || ''}</span></div><div className="mt-2 flex h-1 overflow-hidden rounded-full bg-white/10"><span className="bg-lime-300" style={{ width: `${homeWidth}%` }} /><span className="bg-cyan-300" style={{ width: `${100 - homeWidth}%` }} /></div></div>;
+          return <div key={stat.label} className="rounded-xl border border-white/[.05] bg-white/[.02] px-3 py-2.5"><div className="grid grid-cols-[36px_1fr_36px] items-center gap-2 text-[10px] font-bold text-white/55"><span>{stat.label}</span><div className="h-2 overflow-hidden rounded-full bg-white/[.06]"><div className="h-full rounded-full bg-lime-300" style={{ width: `${Math.min(100, (homeWidth / total) * 100)}%` }} /></div><span>{stat.home}</span></div></div>;
         })}</div>}
-        {activeTab === 'Kronologi' && <div className="relative ml-3 border-l border-white/10 pl-5">{report.events.map((event, index) => <div key={`${event.minute}-${event.type}-${event.player.id}-${index}`} className="relative flex gap-3 border-b border-white/[.04] py-3 last:border-0"><span className={`absolute -left-[25px] top-4 h-2.5 w-2.5 rounded-full border-2 border-[#0d131c] ${event.type === 'goal' || event.type === 'ownGoal' ? 'bg-lime-300' : event.type === 'red' ? 'bg-rose-400' : event.type === 'yellow' ? 'bg-amber-300' : 'bg-cyan-300'}`} /><span className="w-8 shrink-0 text-[10px] font-bold tabular-nums text-white/45">{minuteLabel(event.minute)}</span><p className="text-[10px] leading-relaxed text-white/75">{eventDescription(event)} <span className="text-white/35">({event.team})</span></p></div>)}</div>}
+        {activeTab === 'Kronologi' && <div className="relative ml-3 border-l border-white/10 pl-5">{report.events.map((event, index) => <div key={`${event.minute}-${event.type}-${event.player.id}-${index}`} className="relative flex gap-3 border-b border-white/[.04] py-3 last:border-0"><span className={`absolute -left-[25px] top-4 h-2.5 w-2.5 rounded-full border-2 border-[#0d131c] ${event.type === 'goal' || event.type === 'ownGoal' ? 'bg-lime-300' : event.type === 'red' ? 'bg-rose-400' : event.type === 'yellow' ? 'bg-amber-300' : 'bg-cyan-300'}`} /><span className="w-8 shrink-0 text-[10px] font-bold tabular-nums text-white/45">{minuteLabel(event.minute)}</span><p className="text-[10px] leading-relaxed text-white/70">{eventDescription(event)} <span className="text-white/35">· {event.team}</span></p></div>)}</div>}
       </div>
       <footer className="border-t border-white/10 px-4 py-3 text-[9px] leading-relaxed text-white/35 sm:px-5">Kronologi dan statistik merupakan narasi simulasi untuk pertandingan ini.</footer>
     </section>
